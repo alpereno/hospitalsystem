@@ -1,10 +1,10 @@
-package com.alperen.hospitalsystem.service;
+package com.alperen.hospitalsystem.service.abstracts;
 
 import com.alperen.hospitalsystem.entity.Patient;
 
 import java.util.List;
 
-public interface PatientService {
+public interface IPatientService {
     public List<Patient> findAll();
     public Patient findById();
     public List<Patient> findByGender();

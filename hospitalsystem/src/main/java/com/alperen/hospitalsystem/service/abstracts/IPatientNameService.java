@@ -1,10 +1,10 @@
-package com.alperen.hospitalsystem.service;
+package com.alperen.hospitalsystem.service.abstracts;
 
 import com.alperen.hospitalsystem.entity.PatientName;
 
 import java.util.List;
 
-public interface PatientNameService {
+public interface IPatientNameService {
     public List<PatientName> findAll();
     public List<PatientName> findByFirstName();
     public List<PatientName> findByLastName();
