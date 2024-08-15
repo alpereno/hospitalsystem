@@ -1,6 +1,9 @@
 -- Patients tablosu
 CREATE TABLE patients (
     patient_id SERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    middle_name VARCHAR(50),
+    last_name VARCHAR(50) NOT NULL,
     date_of_birth DATE,
     gender CHAR(1) CHECK (gender IN ('M', 'F')),
     address TEXT,
@@ -26,13 +29,4 @@ CREATE TABLE email_addresses (
     patient_id INT REFERENCES patients(patient_id) ON DELETE CASCADE,
     email_address VARCHAR(100) NOT NULL,
     email_type VARCHAR(20)
-);
-
--- Hasta isimleri tablosu
-CREATE TABLE patient_names (
-    id SERIAL PRIMARY KEY,
-    patient_id INT REFERENCES patients(patient_id) ON DELETE CASCADE,
-    first_name VARCHAR(50) NOT NULL,
-    middle_name VARCHAR(50),
-    last_name VARCHAR(50) NOT NULL
 );

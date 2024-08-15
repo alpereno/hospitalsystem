@@ -57,48 +57,14 @@ ALTER SEQUENCE public.email_addresses_email_id_seq OWNED BY public.email_address
 
 
 --
--- Name: patient_names; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.patient_names (
-    id integer NOT NULL,
-    patient_id integer,
-    first_name character varying(50) NOT NULL,
-    middle_name character varying(50),
-    last_name character varying(50) NOT NULL
-);
-
-
-ALTER TABLE public.patient_names OWNER TO postgres;
-
---
--- Name: patient_names_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
---
-
-CREATE SEQUENCE public.patient_names_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE public.patient_names_id_seq OWNER TO postgres;
-
---
--- Name: patient_names_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
---
-
-ALTER SEQUENCE public.patient_names_id_seq OWNED BY public.patient_names.id;
-
-
---
 -- Name: patients; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.patients (
     patient_id integer NOT NULL,
+    first_name character varying(50) NOT NULL,
+    middle_name character varying(50),
+    last_name character varying(50) NOT NULL,
     date_of_birth date,
     gender character(1),
     address text,
@@ -181,13 +147,6 @@ ALTER TABLE ONLY public.email_addresses ALTER COLUMN email_id SET DEFAULT nextva
 
 
 --
--- Name: patient_names id; Type: DEFAULT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.patient_names ALTER COLUMN id SET DEFAULT nextval('public.patient_names_id_seq'::regclass);
-
-
---
 -- Name: patients patient_id; Type: DEFAULT; Schema: public; Owner: postgres
 --
 
@@ -210,18 +169,10 @@ COPY public.email_addresses (email_id, patient_id, email_address, email_type) FR
 
 
 --
--- Data for Name: patient_names; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-COPY public.patient_names (id, patient_id, first_name, middle_name, last_name) FROM stdin;
-\.
-
-
---
 -- Data for Name: patients; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.patients (patient_id, date_of_birth, gender, address, tckn, passport_number, version_number, created_at, updated_at, is_active) FROM stdin;
+COPY public.patients (patient_id, first_name, middle_name, last_name, date_of_birth, gender, address, tckn, passport_number, version_number, created_at, updated_at, is_active) FROM stdin;
 \.
 
 
@@ -238,13 +189,6 @@ COPY public.phone_numbers (phone_id, patient_id, phone_number, phone_type) FROM 
 --
 
 SELECT pg_catalog.setval('public.email_addresses_email_id_seq', 1, false);
-
-
---
--- Name: patient_names_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
---
-
-SELECT pg_catalog.setval('public.patient_names_id_seq', 1, false);
 
 
 --
@@ -267,14 +211,6 @@ SELECT pg_catalog.setval('public.phone_numbers_phone_id_seq', 1, false);
 
 ALTER TABLE ONLY public.email_addresses
     ADD CONSTRAINT email_addresses_pkey PRIMARY KEY (email_id);
-
-
---
--- Name: patient_names patient_names_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.patient_names
-    ADD CONSTRAINT patient_names_pkey PRIMARY KEY (id);
 
 
 --
@@ -315,14 +251,6 @@ ALTER TABLE ONLY public.phone_numbers
 
 ALTER TABLE ONLY public.email_addresses
     ADD CONSTRAINT email_addresses_patient_id_fkey FOREIGN KEY (patient_id) REFERENCES public.patients(patient_id) ON DELETE CASCADE;
-
-
---
--- Name: patient_names patient_names_patient_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.patient_names
-    ADD CONSTRAINT patient_names_patient_id_fkey FOREIGN KEY (patient_id) REFERENCES public.patients(patient_id) ON DELETE CASCADE;
 
 
 --
