@@ -1,8 +1,13 @@
 package com.alperen.hospitalsystem.entity;
 
 import jakarta.persistence.*;
+import org.springframework.cglib.core.Local;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,10 +63,10 @@ public class Patient{
     private boolean isActive = true;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PhoneNumber> phoneNumbers;
+    private List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EmailAddress> emailAddresses;
+    private List<EmailAddress> emailAddresses = new ArrayList<>();
 
     public Patient() {
     }
@@ -81,6 +86,23 @@ public class Patient{
         this.updatedAt = updatedAt;
         this.versionNumber = versionNumber;
         this.isActive = isActive;
+    }
+
+    public Patient(String firstName, String middleName, String lastName, Date dateOfBirth, char gender, String address, String tckn, String passportNumber, int versionNumber, Timestamp createdAt, Timestamp updatedAt, boolean isActive, List<PhoneNumber> phoneNumbers, List<EmailAddress> emailAddresses) {
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
+        this.dateOfBirth = dateOfBirth;
+        this.gender = gender;
+        this.address = address;
+        this.tckn = tckn;
+        this.passportNumber = passportNumber;
+        this.versionNumber = versionNumber;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.isActive = isActive;
+        this.phoneNumbers = phoneNumbers;
+        this.emailAddresses = emailAddresses;
     }
 
     public int getId() {
@@ -201,6 +223,85 @@ public class Patient{
 
     public void setEmailAddresses(List<EmailAddress> emailAddresses) {
         this.emailAddresses = emailAddresses;
+    }
+
+    public void addPhoneNumber(PhoneNumber phoneNumber) {
+        phoneNumbers.add(phoneNumber);
+        phoneNumber.setPatient(this);
+    }
+
+    public void removePhoneNumber(PhoneNumber phoneNumber) {
+        phoneNumbers.remove(phoneNumber);
+        phoneNumber.setPatient(null);
+    }
+
+    public void addEmailAddress(EmailAddress emailAddress) {
+        emailAddresses.add(emailAddress);
+        emailAddress.setPatient(this);
+    }
+
+    public void removeEmailAddress(EmailAddress emailAddress) {
+        emailAddresses.remove(emailAddress);
+        emailAddress.setPatient(null);
+    }
+
+    public void updateFields(Patient updatedPatient){
+        this.setFirstName(updatedPatient.getFirstName());
+        this.setMiddleName(updatedPatient.getMiddleName());
+        this.setLastName(updatedPatient.getLastName());
+        this.setDateOfBirth(updatedPatient.getDateOfBirth());
+        this.setGender(updatedPatient.getGender());
+        this.setAddress(updatedPatient.getAddress());
+        this.setTckn(updatedPatient.getTckn());
+        this.setPassportNumber(updatedPatient.getPassportNumber());
+
+        this.setVersionNumber(updatedPatient.getVersionNumber()+1);
+
+        this.updateEmailAddresses(updatedPatient.getEmailAddresses());
+        this.updatePhoneNumbers(updatedPatient.getPhoneNumbers());
+
+        arrangeUpdateTime();
+    }
+
+    public void arrangePatientEmailAddress(){
+        for (EmailAddress email:this.getEmailAddresses()){
+            email.setPatient(this);
+        }
+    }
+
+    public void arrangePatientPhoneNumbers(){
+        for (PhoneNumber number:this.getPhoneNumbers()){
+            number.setPatient(this);
+        }
+    }
+
+    public void arrangeUpdateTime(){
+        LocalDateTime localDateTime = LocalDateTime.now();
+        ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
+
+        this.setUpdatedAt(Timestamp.from(zonedDateTime.toInstant()));
+    }
+
+    private void updateEmailAddresses(List<EmailAddress> updatedEmailAddresses) {
+        // Clear the current email addresses and re-add the new ones
+        this.getEmailAddresses().clear();
+        if (updatedEmailAddresses != null) {
+            for (EmailAddress email : updatedEmailAddresses) {
+                email.setPatient(this);  // Set the parent reference
+                this.getEmailAddresses().add(email);  // Add the new email address
+            }
+        }
+    }
+
+    private void updatePhoneNumbers(List<PhoneNumber> updatedPhoneNumbers) {
+        // Clear the current phone numbers and re-add the new ones
+        this.getPhoneNumbers().clear();
+        if (updatedPhoneNumbers != null) {
+            for (PhoneNumber number : updatedPhoneNumbers) {
+                number.setPatient(this);  // Set the parent reference
+                this.getPhoneNumbers().add(number);  // Add the new phone number
+            }
+        }
     }
 
     @Override

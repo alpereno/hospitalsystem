@@ -1,5 +1,6 @@
 package com.alperen.hospitalsystem.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 
@@ -18,6 +19,7 @@ public class PhoneNumber {
     @Column(name = "phone_id")
     private int id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
