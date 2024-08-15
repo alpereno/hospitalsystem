@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "email_addresses")
-public class EmailAddress {
+public class EmailAddress{
     // Annotate the class as an entity and map to db table
     // define fields
     // annotate fields with db column names
@@ -28,7 +28,8 @@ public class EmailAddress {
     private String emailType;
 
     // Default constructor
-    public EmailAddress() {}
+    public EmailAddress() {
+    }
 
     public EmailAddress(Patient patient, String emailAddress, String emailType) {
         this.patient = patient;

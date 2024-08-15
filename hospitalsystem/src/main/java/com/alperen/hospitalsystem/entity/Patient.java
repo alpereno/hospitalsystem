@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name="patients")
-public class Patient {
+public class Patient{
     // Annotate the class as an entity and map to db table
     // define fields
     // annotate fields with db column names
@@ -23,6 +23,15 @@ public class Patient {
     @Column(name = "patient_id")
     private int id;
 
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "middle_name")
+    private String middleName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
     @Column(name = "date_of_birth")
     private Date dateOfBirth;
 
@@ -32,7 +41,7 @@ public class Patient {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "tckn", unique = true,length = 11)
+    @Column(name = "tckn", unique = true, length = 11)
     private String tckn;
 
     @Column(name = "passport_number", unique = true, length = 20)
@@ -49,28 +58,28 @@ public class Patient {
     private boolean isActive = true;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PhoneNumber> phoneNumbers = new ArrayList<>();
+    private List<PhoneNumber> phoneNumbers;
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EmailAddress> emailAddresses = new ArrayList<>();
-
-    @OneToOne(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
-    private PatientName patientName;
+    private List<EmailAddress> emailAddresses;
 
     public Patient() {
     }
 
-    // Parameterized constructor
-    public Patient(Date dateOfBirth, char gender, String address, String tckn, String passportNumber,
-                   int versionNumber, Timestamp createdAt, Timestamp updatedAt, boolean isActive) {
+    public Patient(String firstName, String middleName, String lastName, Date dateOfBirth, char gender, String address,
+                   String tckn, String passportNumber, Timestamp createdAt, Timestamp updatedAt,
+                   int versionNumber, boolean isActive) {
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
         this.dateOfBirth = dateOfBirth;
         this.gender = gender;
         this.address = address;
         this.tckn = tckn;
         this.passportNumber = passportNumber;
-        this.versionNumber = versionNumber;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.versionNumber = versionNumber;
         this.isActive = isActive;
     }
 
@@ -80,6 +89,30 @@ public class Patient {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getMiddleName() {
+        return middleName;
+    }
+
+    public void setMiddleName(String middleName) {
+        this.middleName = middleName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public Date getDateOfBirth() {
@@ -170,18 +203,13 @@ public class Patient {
         this.emailAddresses = emailAddresses;
     }
 
-    public PatientName getPatientName() {
-        return patientName;
-    }
-
-    public void setPatientName(PatientName patientName) {
-        this.patientName = patientName;
-    }
-
     @Override
     public String toString() {
         return "Patient{" +
                 "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
                 ", gender=" + gender +
                 ", address='" + address + '\'' +
@@ -193,7 +221,6 @@ public class Patient {
                 ", isActive=" + isActive +
                 ", phoneNumbers=" + phoneNumbers +
                 ", emailAddresses=" + emailAddresses +
-                ", patientName=" + patientName +
                 '}';
     }
 }
