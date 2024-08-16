@@ -9,8 +9,11 @@ import java.util.List;
 
 @Repository
 public interface IPatientRepository extends JpaRepository<Patient, Integer> {
-    public List<Patient> findByFirstName(String firstName);
-    public List<Patient> findByLastName(String lastName);
-    public List<Patient> findByGender(char gender);
-    public List<Patient> findByDateOfBirthBetween(Timestamp startDate, Timestamp endDate);
+    public List<Patient> findAllByIsActiveTrue();
+    // find by name (using like) does not matter case and based on active status
+    public List<Patient> findByFirstNameContainingIgnoreCaseAndIsActiveTrue(String firstName);
+    public List<Patient> findByLastNameContainingIgnoreCaseAndIsActiveTrue(String lastName);
+    public List<Patient> findByGenderAndIsActiveTrue(char gender);
+    List<Patient> findByDateOfBirthBetweenAndIsActiveTrue(Timestamp startDate, Timestamp endDate);
+
 }
