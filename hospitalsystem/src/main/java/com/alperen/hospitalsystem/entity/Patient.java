@@ -249,16 +249,18 @@ public class Patient{
         this.setFirstName(updatedPatient.getFirstName());
         this.setMiddleName(updatedPatient.getMiddleName());
         this.setLastName(updatedPatient.getLastName());
-        this.setDateOfBirth(updatedPatient.getDateOfBirth());
+        //this.setDateOfBirth(updatedPatient.getDateOfBirth());
         this.setGender(updatedPatient.getGender());
         this.setAddress(updatedPatient.getAddress());
-        this.setTckn(updatedPatient.getTckn());
-        this.setPassportNumber(updatedPatient.getPassportNumber());
+        this.setActive(true);
+        //this.setTckn(updatedPatient.getTckn());
+        //this.setPassportNumber(updatedPatient.getPassportNumber());
 
         this.setVersionNumber(updatedPatient.getVersionNumber()+1);
 
         this.updateEmailAddresses(updatedPatient.getEmailAddresses());
         this.updatePhoneNumbers(updatedPatient.getPhoneNumbers());
+        this.setCreatedAt(updatedPatient.getCreatedAt());
 
         arrangeUpdateTime();
     }
