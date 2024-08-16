@@ -22,7 +22,7 @@ public class PatientServiceImpl implements IPatientService {
 
     @Override
     public List<Patient> findAll() {
-        return patientRepository.findAll();
+        return patientRepository.findAllByIsActiveTrue();
     }
 
     @Override
@@ -32,18 +32,18 @@ public class PatientServiceImpl implements IPatientService {
 
     @Override
     public List<Patient> findByName(String name) {
-        return patientRepository.findByFirstName(name);
+        return patientRepository.findByFirstNameContainingIgnoreCaseAndIsActiveTrue(name);
     }
 
     @Override
     public List<Patient> findByLastName(String lastName) {
-        return patientRepository.findByLastName(lastName);
+        return patientRepository.findByLastNameContainingIgnoreCaseAndIsActiveTrue(lastName);
     }
 
     @Override
     public List<Patient> findByGender(char gender) {
         if (gender == 'M' || gender == 'F'){
-            return patientRepository.findByGender(gender);
+            return patientRepository.findByGenderAndIsActiveTrue(gender);
         }
         return null;
     }
@@ -53,7 +53,7 @@ public class PatientServiceImpl implements IPatientService {
         Timestamp startDate = Timestamp.valueOf(LocalDate.now().minusYears(endAge + 1).plusDays(1).atStartOfDay());
         Timestamp endDate = Timestamp.valueOf(LocalDate.now().minusYears(startAge).atStartOfDay());
 
-        return patientRepository.findByDateOfBirthBetween(startDate, endDate);
+        return patientRepository.findByDateOfBirthBetweenAndIsActiveTrue(startDate, endDate);
     }
 
 //    @Override
@@ -77,9 +77,25 @@ public class PatientServiceImpl implements IPatientService {
 
     @Override
     public Patient update(int id, Patient updatedPatient) {
-        Patient patient = patientRepository.findById(id).orElseThrow(() -> new RuntimeException("Patient not found"));
-        patient.updateFields(updatedPatient);
-        return patientRepository.save(patient);
+        // check if patient active
+
+        // Find the existing patient by ID
+        Patient existingPatient = patientRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Patient not found"));
+
+        // Deactivate the existing patient record
+        existingPatient.setActive(false);
+        patientRepository.save(existingPatient);
+
+        // Create a new patient record with the updated details
+        Patient newPatient = new Patient();
+        newPatient.setTckn(existingPatient.getTckn());
+        newPatient.setPassportNumber(existingPatient.getPassportNumber());
+        newPatient.setDateOfBirth(existingPatient.getDateOfBirth());
+        newPatient.updateFields(updatedPatient); // Copy the updated fields to the new patient
+        newPatient.setVersionNumber(existingPatient.getVersionNumber() + 1); // Increment the version number
+
+        return patientRepository.save(newPatient); // Save the new patient record
     }
 
     @Override
