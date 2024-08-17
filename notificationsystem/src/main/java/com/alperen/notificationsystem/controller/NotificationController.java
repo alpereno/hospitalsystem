@@ -1,6 +1,7 @@
 package com.alperen.notificationsystem.controller;
 
 import com.alperen.notificationsystem.entity.Notification;
+import com.alperen.notificationsystem.entity.patientEntity.Patient;
 import com.alperen.notificationsystem.service.INotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,5 +39,9 @@ public class NotificationController {
     @DeleteMapping("/delete/{id}")
     public void deleteById(@PathVariable("id")int id){
         notificationService.deleteById(id);
+    }
+
+    public void setNotifications(List<Patient> patients){
+
     }
 }

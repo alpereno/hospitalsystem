@@ -1,5 +1,7 @@
 package com.alperen.notificationsystem.entity.patientEntity;
 
+import jakarta.persistence.Column;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -16,6 +18,8 @@ public class Patient {
     private String passportNumber;
     private List<PhoneNumber> phoneNumbers = new ArrayList<>();
     private List<EmailAddress> emailAddresses = new ArrayList<>();
+    private boolean isSmsActive;
+    private boolean isEmailActive;
 
     public int getId() {
         return id;
