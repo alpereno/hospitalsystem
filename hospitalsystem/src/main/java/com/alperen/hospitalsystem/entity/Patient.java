@@ -1,5 +1,6 @@
 package com.alperen.hospitalsystem.entity;
 
+import com.alperen.hospitalsystem.Request.PatientRequest;
 import jakarta.persistence.*;
 import org.springframework.cglib.core.Local;
 
@@ -67,6 +68,8 @@ public class Patient{
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmailAddress> emailAddresses = new ArrayList<>();
+
+    // bool 2 alan sms ve email true gönder false hayır
 
     public Patient() {
     }
@@ -245,26 +248,6 @@ public class Patient{
         emailAddress.setPatient(null);
     }
 
-    public void updateFields(Patient updatedPatient){
-        this.setFirstName(updatedPatient.getFirstName());
-        this.setMiddleName(updatedPatient.getMiddleName());
-        this.setLastName(updatedPatient.getLastName());
-        //this.setDateOfBirth(updatedPatient.getDateOfBirth());
-        this.setGender(updatedPatient.getGender());
-        this.setAddress(updatedPatient.getAddress());
-        this.setActive(true);
-        //this.setTckn(updatedPatient.getTckn());
-        //this.setPassportNumber(updatedPatient.getPassportNumber());
-
-        this.setVersionNumber(updatedPatient.getVersionNumber()+1);
-
-        this.updateEmailAddresses(updatedPatient.getEmailAddresses());
-        this.updatePhoneNumbers(updatedPatient.getPhoneNumbers());
-        this.setCreatedAt(updatedPatient.getCreatedAt());
-
-        arrangeUpdateTime();
-    }
-
     public void arrangePatientEmailAddress(){
         for (EmailAddress email:this.getEmailAddresses()){
             email.setPatient(this);
@@ -282,28 +265,6 @@ public class Patient{
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
 
         this.setUpdatedAt(Timestamp.from(zonedDateTime.toInstant()));
-    }
-
-    private void updateEmailAddresses(List<EmailAddress> updatedEmailAddresses) {
-        // Clear the current email addresses and re-add the new ones
-        this.getEmailAddresses().clear();
-        if (updatedEmailAddresses != null) {
-            for (EmailAddress email : updatedEmailAddresses) {
-                email.setPatient(this);  // Set the parent reference
-                this.getEmailAddresses().add(email);  // Add the new email address
-            }
-        }
-    }
-
-    private void updatePhoneNumbers(List<PhoneNumber> updatedPhoneNumbers) {
-        // Clear the current phone numbers and re-add the new ones
-        this.getPhoneNumbers().clear();
-        if (updatedPhoneNumbers != null) {
-            for (PhoneNumber number : updatedPhoneNumbers) {
-                number.setPatient(this);  // Set the parent reference
-                this.getPhoneNumbers().add(number);  // Add the new phone number
-            }
-        }
     }
 
     @Override

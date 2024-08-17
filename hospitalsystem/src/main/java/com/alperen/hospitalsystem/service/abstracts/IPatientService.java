@@ -1,19 +1,22 @@
 package com.alperen.hospitalsystem.service.abstracts;
 
 import com.alperen.hospitalsystem.Request.PatientRequest;
+import com.alperen.hospitalsystem.Response.PatientResponse;
 import com.alperen.hospitalsystem.entity.Patient;
 
 import java.util.List;
 
 public interface IPatientService {
-    public List<Patient> findAll();
-    public Patient findById(int id);
-    public List<Patient> findByName(String name);
-    public List<Patient> findByLastName(String lastName);
-    public List<Patient> findByGender(char gender);
-    public List<Patient> findByDateOfBirthBetween(int startAge, int endAge);
+    public List<PatientResponse> findAll();
+    public PatientResponse findById(int id);
+    public List<PatientResponse> findByName(String name);
+    public List<PatientResponse> findByLastName(String lastName);
+    public List<PatientResponse> findByGender(char gender);
+    public List<PatientResponse> findByDateOfBirthBetween(int startAge, int endAge);
     //public Patient save(PatientRequest patient);
-    public Patient save(Patient patient);
-    public Patient update(int id, Patient updatedPatient);
-    public Patient deleteById(int id);
+    public PatientResponse save(PatientRequest patient);
+    public PatientResponse update(int id, PatientRequest updatedPatient);
+    public boolean deleteById(int id);
+
+    //public Patient saveV2(PatientRequest patientRequest);
 }

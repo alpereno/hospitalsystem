@@ -1,11 +1,10 @@
 package com.alperen.hospitalsystem.controller;
 
 import com.alperen.hospitalsystem.Request.PatientRequest;
-import com.alperen.hospitalsystem.entity.Patient;
+import com.alperen.hospitalsystem.Response.PatientResponse;
 import com.alperen.hospitalsystem.service.abstracts.IPatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,52 +22,43 @@ public class PatientController {
     }
 
     @PostMapping("/addPatient")
-    public Patient save(@RequestBody Patient patient){
-        return patientService.save(patient);
+    public ResponseEntity<PatientResponse> save(@RequestBody PatientRequest patient){
+        return new ResponseEntity<>(patientService.save(patient), HttpStatus.CREATED);
     }
 
     @GetMapping("/getall")
-    public List<Patient> getAllPatient(){
-        return patientService.findAll();
+    public ResponseEntity<List<PatientResponse>> getAllPatient(){
+        return new ResponseEntity<>(patientService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("searchByGender/{gender}")
-    public List<Patient> searchByGender(@PathVariable("gender") char gender){
-        return  patientService.findByGender(gender);
+    public ResponseEntity<List<PatientResponse>> searchByGender(@PathVariable("gender") char gender){
+        return new ResponseEntity<>(patientService.findByGender(gender), HttpStatus.OK);
     }
 
 
     @GetMapping("searchName/{name}")
-    public List<Patient> searchByName(@PathVariable("name") String name){
-        return  patientService.findByName(name);
+    public ResponseEntity<List<PatientResponse>> searchByName(@PathVariable("name") String name){
+        return new ResponseEntity<>(patientService.findByName(name), HttpStatus.OK);
     }
 
     @GetMapping("searchLastName/{lastname}")
-    public List<Patient> searchByLastName(@PathVariable("lastname") String lastName){
-        return  patientService.findByLastName(lastName);
+    public ResponseEntity<List<PatientResponse>> searchByLastName(@PathVariable("lastname") String lastName){
+        return new ResponseEntity<>(patientService.findByLastName(lastName), HttpStatus.OK);
+    }
+
+    @GetMapping("listAgeBetween/{start}/{end}")
+    public ResponseEntity<List<PatientResponse>> listAgeBetween(@PathVariable("start") int start, @PathVariable("end") int end){
+        return new ResponseEntity<>(patientService.findByDateOfBirthBetween(start, end), HttpStatus.OK);
     }
 
     @PutMapping("/update/{id}")
-    public Patient updatePatient(@PathVariable("id")int id, @RequestBody Patient patient){
-        return patientService.update(id, patient);
+    public ResponseEntity<PatientResponse> updatePatient(@PathVariable("id")int id, @RequestBody PatientRequest patientRequest){
+        return new ResponseEntity<>(patientService.update(id, patientRequest), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    public Patient detelePatient(@PathVariable("id")int id){
-        return patientService.deleteById(id);
+    public ResponseEntity<Boolean> deletePatient(@PathVariable("id")int id){
+        return new ResponseEntity<>(patientService.deleteById(id), HttpStatus.OK);
     }
-
-
-
-//    @PostMapping(   consumes = MediaType.APPLICATION_JSON_VALUE,
-//            produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<Patient> save(@RequestBody PatientRequest PatientRequest){
-//        return null;
-//        //return new ResponseEntity<>(patientService.save(patient), HttpStatus.CREATED);
-//    }
-
-//    @GetMapping("/searchByGender/{gender}")
-//    public ResponseEntity<List<Patient>> searchByGender(@PathVariable("gender") String gender){
-//        return new ResponseEntity<>(patientService.findByGender(gender), HttpStatus.CREATED);
-//    }
 }
