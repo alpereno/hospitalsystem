@@ -5,7 +5,7 @@ import com.alperen.hospitalsystem.Response.PatientResponse;
 import com.alperen.hospitalsystem.entity.Patient;
 import com.alperen.hospitalsystem.repository.abstracts.IPatientRepository;
 import com.alperen.hospitalsystem.service.abstracts.IPatientService;
-import com.alperen.hospitalsystem.service.abstracts.ISendNotification;
+//import com.alperen.hospitalsystem.service.abstracts.ISendNotification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,12 +21,12 @@ import java.util.List;
 public class PatientServiceImpl implements IPatientService {
 
     private IPatientRepository patientRepository;
-    private ISendNotification notificationService;
+    //private ISendNotification notificationService;
 
     @Autowired
-    public PatientServiceImpl(IPatientRepository patientRepository, ISendNotification notificationService){
+    public PatientServiceImpl(IPatientRepository patientRepository/*, ISendNotification notificationService*/){
         this.patientRepository = patientRepository;
-        this.notificationService = notificationService;
+        //this.notificationService = notificationService;
     }
 
     @Override
@@ -92,7 +92,7 @@ public class PatientServiceImpl implements IPatientService {
         newPatient = patientRepository.save(newPatient);
 
         // yas hesapla
-        notificationService.savePatientNotification(newPatient.getId(), newPatient.getGender(), 5);
+        //notificationService.savePatientNotification(newPatient.getId(), newPatient.getGender(), 5);
 
         PatientResponse response = new PatientResponse();
         fillPatientResponse(newPatient, response);
