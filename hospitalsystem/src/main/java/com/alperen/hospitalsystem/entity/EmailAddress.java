@@ -6,13 +6,6 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "email_addresses")
 public class EmailAddress{
-    // Annotate the class as an entity and map to db table
-    // define fields
-    // annotate fields with db column names
-    // create constructors
-    // generate getter/setter methods
-    // generate toString() method
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "email_id")
@@ -29,7 +22,6 @@ public class EmailAddress{
     @Column(name = "email_type")
     private String emailType;
 
-    // Default constructor
     public EmailAddress() {
     }
 
@@ -69,15 +61,5 @@ public class EmailAddress{
 
     public void setEmailType(String emailType) {
         this.emailType = emailType;
-    }
-
-    @Override
-    public String toString() {
-        return "EmailAddress{" +
-                "id=" + id +
-                ", patient=" + patient +
-                ", emailAddress='" + emailAddress + '\'' +
-                ", emailType='" + emailType + '\'' +
-                '}';
     }
 }

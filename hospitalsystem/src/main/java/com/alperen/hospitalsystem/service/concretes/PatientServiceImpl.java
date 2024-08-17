@@ -87,8 +87,6 @@ public class PatientServiceImpl implements IPatientService {
         Patient newPatient = new Patient();
         fillPatientFields(newPatient, patientRequest, true);
 
-//        patient.arrangePatientPhoneNumbers();
-//        patient.arrangePatientEmailAddress();
         newPatient = patientRepository.save(newPatient);
 
         // yas hesapla
@@ -143,6 +141,8 @@ public class PatientServiceImpl implements IPatientService {
         patient.setLastName(patientRequest.getLastName());
         patient.setGender(patientRequest.getGender());
         patient.setAddress(patientRequest.getAddress());
+        patient.setEmailActive(patientRequest.isEmailActive());
+        patient.setSmsActive(patient.isSmsActive());
 
         LocalDateTime localDateTime = LocalDateTime.now();
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
@@ -163,7 +163,6 @@ public class PatientServiceImpl implements IPatientService {
             patient.setCreatedAt(Timestamp.from(zonedDateTime.toInstant()));
         }
         else {
-
             patient.setCreatedAt(patientRequest.getCreatedAt());
         }
     }
@@ -180,6 +179,8 @@ public class PatientServiceImpl implements IPatientService {
          response.setPassportNumber(patient.getPassportNumber());
          response.setPhoneNumbers(patient.getPhoneNumbers());
          response.setEmailAddresses(patient.getEmailAddresses());
+         response.setEmailActive(patient.isEmailActive());
+         response.setSmsActive(patient.isSmsActive());
     }
 
     public void fillResponseList(List<Patient> patients, List<PatientResponse> patientResponseList){

@@ -3,6 +3,7 @@ package com.alperen.hospitalsystem.Request;
 import com.alperen.hospitalsystem.entity.EmailAddress;
 import com.alperen.hospitalsystem.entity.Patient;
 import com.alperen.hospitalsystem.entity.PhoneNumber;
+import jakarta.persistence.Column;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -26,6 +27,8 @@ public class PatientRequest {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private boolean isActive;
+    private boolean isSmsActive;
+    private boolean isEmailActive;
     private List<PhoneNumber> phoneNumbers = new ArrayList<>();
     private List<EmailAddress> emailAddresses = new ArrayList<>();
 
@@ -141,4 +144,19 @@ public class PatientRequest {
         this.emailAddresses = emailAddresses;
     }
 
+    public boolean isSmsActive() {
+        return isSmsActive;
+    }
+
+    public void setSmsActive(boolean smsActive) {
+        isSmsActive = smsActive;
+    }
+
+    public boolean isEmailActive() {
+        return isEmailActive;
+    }
+
+    public void setEmailActive(boolean emailActive) {
+        isEmailActive = emailActive;
+    }
 }

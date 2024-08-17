@@ -22,13 +22,15 @@ public class PatientResponse {
     private String address;
     private String tckn;
     private String passportNumber;
+    private boolean isSmsActive;
+    private boolean isEmailActive;
     private List<PhoneNumber> phoneNumbers = new ArrayList<>();
     private List<EmailAddress> emailAddresses = new ArrayList<>();
 
     public PatientResponse() {
     }
 
-    public PatientResponse(String firstName, String middleName, String lastName, Date dateOfBirth, char gender, String address, String tckn, String passportNumber, List<PhoneNumber> phoneNumbers, List<EmailAddress> emailAddresses) {
+    public PatientResponse(String firstName, String middleName, String lastName, Date dateOfBirth, char gender, String address, String tckn, String passportNumber, boolean isSmsActive, boolean isEmailActive, List<PhoneNumber> phoneNumbers, List<EmailAddress> emailAddresses) {
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
@@ -37,6 +39,8 @@ public class PatientResponse {
         this.address = address;
         this.tckn = tckn;
         this.passportNumber = passportNumber;
+        this.isSmsActive = isSmsActive;
+        this.isEmailActive = isEmailActive;
         this.phoneNumbers = phoneNumbers;
         this.emailAddresses = emailAddresses;
     }
@@ -127,5 +131,21 @@ public class PatientResponse {
 
     public void setEmailAddresses(List<EmailAddress> emailAddresses) {
         this.emailAddresses = emailAddresses;
+    }
+
+    public boolean isSmsActive() {
+        return isSmsActive;
+    }
+
+    public void setSmsActive(boolean smsActive) {
+        isSmsActive = smsActive;
+    }
+
+    public boolean isEmailActive() {
+        return isEmailActive;
+    }
+
+    public void setEmailActive(boolean emailActive) {
+        isEmailActive = emailActive;
     }
 }

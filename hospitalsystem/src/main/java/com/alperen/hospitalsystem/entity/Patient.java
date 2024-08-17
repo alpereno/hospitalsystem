@@ -63,13 +63,17 @@ public class Patient{
     @Column(name = "is_Active")
     private boolean isActive = true;
 
+    @Column(name = "sms_notification")
+    private boolean isSmsActive;
+    @Column(name = "email_notification")
+    private boolean isEmailActive;
+
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EmailAddress> emailAddresses = new ArrayList<>();
 
-    // bool 2 alan sms ve email true gönder false hayır
 
     public Patient() {
     }
@@ -89,23 +93,6 @@ public class Patient{
         this.updatedAt = updatedAt;
         this.versionNumber = versionNumber;
         this.isActive = isActive;
-    }
-
-    public Patient(String firstName, String middleName, String lastName, Date dateOfBirth, char gender, String address, String tckn, String passportNumber, int versionNumber, Timestamp createdAt, Timestamp updatedAt, boolean isActive, List<PhoneNumber> phoneNumbers, List<EmailAddress> emailAddresses) {
-        this.firstName = firstName;
-        this.middleName = middleName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-        this.gender = gender;
-        this.address = address;
-        this.tckn = tckn;
-        this.passportNumber = passportNumber;
-        this.versionNumber = versionNumber;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.isActive = isActive;
-        this.phoneNumbers = phoneNumbers;
-        this.emailAddresses = emailAddresses;
     }
 
     public int getId() {
@@ -267,24 +254,19 @@ public class Patient{
         this.setUpdatedAt(Timestamp.from(zonedDateTime.toInstant()));
     }
 
-    @Override
-    public String toString() {
-        return "Patient{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", middleName='" + middleName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", dateOfBirth=" + dateOfBirth +
-                ", gender=" + gender +
-                ", address='" + address + '\'' +
-                ", tckn='" + tckn + '\'' +
-                ", passportNumber='" + passportNumber + '\'' +
-                ", versionNumber=" + versionNumber +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", isActive=" + isActive +
-                ", phoneNumbers=" + phoneNumbers +
-                ", emailAddresses=" + emailAddresses +
-                '}';
+    public boolean isSmsActive() {
+        return isSmsActive;
+    }
+
+    public void setSmsActive(boolean smsActive) {
+        isSmsActive = smsActive;
+    }
+
+    public boolean isEmailActive() {
+        return isEmailActive;
+    }
+
+    public void setEmailActive(boolean emailActive) {
+        isEmailActive = emailActive;
     }
 }
