@@ -2,11 +2,7 @@ package com.alperen.hospitalsystem.Response;
 
 import com.alperen.hospitalsystem.entity.EmailAddress;
 import com.alperen.hospitalsystem.entity.PhoneNumber;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.OneToMany;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -148,4 +144,5 @@ public class PatientResponse {
     public void setEmailActive(boolean emailActive) {
         isEmailActive = emailActive;
     }
+
 }

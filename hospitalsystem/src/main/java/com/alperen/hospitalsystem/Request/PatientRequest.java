@@ -1,14 +1,9 @@
 package com.alperen.hospitalsystem.Request;
 
 import com.alperen.hospitalsystem.entity.EmailAddress;
-import com.alperen.hospitalsystem.entity.Patient;
 import com.alperen.hospitalsystem.entity.PhoneNumber;
-import jakarta.persistence.Column;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

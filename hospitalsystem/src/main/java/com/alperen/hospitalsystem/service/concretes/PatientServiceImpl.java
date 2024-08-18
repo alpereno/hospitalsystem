@@ -136,6 +136,8 @@ public class PatientServiceImpl implements IPatientService {
         PatientResponse response = new PatientResponse();
         fillPatientResponse(newPatient, response);
 
+        rabbitTemplate.convertAndSend(exchange.getName(), routingKey, response);
+
         return response;
     }
 
@@ -157,7 +159,7 @@ public class PatientServiceImpl implements IPatientService {
         patient.setGender(patientRequest.getGender());
         patient.setAddress(patientRequest.getAddress());
         patient.setEmailActive(patientRequest.isEmailActive());
-        patient.setSmsActive(patient.isSmsActive());
+        patient.setSmsActive(patientRequest.isSmsActive());
 
         LocalDateTime localDateTime = LocalDateTime.now();
         ZonedDateTime zonedDateTime = localDateTime.atZone(ZoneId.systemDefault());
