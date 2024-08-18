@@ -2,6 +2,7 @@ package com.alperen.hospitalsystem.controller;
 
 import com.alperen.hospitalsystem.Request.PatientRequest;
 import com.alperen.hospitalsystem.Response.PatientResponse;
+import com.alperen.hospitalsystem.exception.IncorrectSavePatientException;
 import com.alperen.hospitalsystem.service.abstracts.IPatientService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ public class PatientController {
     }
 
     @PostMapping("/addPatient")
-    public ResponseEntity<PatientResponse> save(@RequestBody PatientRequest patient){
+    public ResponseEntity<PatientResponse> save(@RequestBody PatientRequest patient) throws IncorrectSavePatientException {
         return new ResponseEntity<>(patientService.save(patient), HttpStatus.CREATED);
     }
 
