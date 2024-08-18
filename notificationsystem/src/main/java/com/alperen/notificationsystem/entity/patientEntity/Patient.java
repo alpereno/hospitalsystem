@@ -127,6 +127,22 @@ public class Patient {
         this.emailAddresses = emailAddresses;
     }
 
+    public boolean isSmsActive() {
+        return isSmsActive;
+    }
+
+    public void setSmsActive(boolean smsActive) {
+        isSmsActive = smsActive;
+    }
+
+    public boolean isEmailActive() {
+        return isEmailActive;
+    }
+
+    public void setEmailActive(boolean emailActive) {
+        isEmailActive = emailActive;
+    }
+
     @Override
     public String toString() {
         return "Patient{" +

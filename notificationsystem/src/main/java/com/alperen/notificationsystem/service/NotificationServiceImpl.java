@@ -2,14 +2,20 @@ package com.alperen.notificationsystem.service;
 
 import com.alperen.notificationsystem.configuration.RabbitMqConfig;
 import com.alperen.notificationsystem.entity.Notification;
+import com.alperen.notificationsystem.entity.TargetPatient;
 import com.alperen.notificationsystem.entity.patientEntity.Patient;
 import com.alperen.notificationsystem.repository.INotificationRepository;
+import com.alperen.notificationsystem.repository.ITargetPatientRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,11 +23,14 @@ import java.util.Objects;
 public class NotificationServiceImpl implements INotificationService {
 
     private final INotificationRepository notificationRepository;
+    private final ITargetPatientRepository targetPatientRepository;
+
     private ObjectMapper objectMapper;
     @Autowired
-    public NotificationServiceImpl(INotificationRepository notificationRepository, ObjectMapper objectMapper) {
+    public NotificationServiceImpl(INotificationRepository notificationRepository, ObjectMapper objectMapper, ITargetPatientRepository targetPatientRepository) {
         this.notificationRepository = notificationRepository;
         this.objectMapper = objectMapper;
+        this.targetPatientRepository = targetPatientRepository;
     }
 
     @Override
@@ -58,25 +67,39 @@ public class NotificationServiceImpl implements INotificationService {
 
     @RabbitListener(queues = RabbitMqConfig.QUEUE_NAME)
     public void setNotificationToPatient(Message message){
-        System.out.println("Yeni bir hasta kaydoldu notification systemden gorduk... ********************");
-        System.out.println("Message type: " + message.getClass().getName());
+        Patient patient = null;
         try {
-            // Mesajın gövdesini String olarak çıkarma
             String messageBody = new String(message.getBody());
-
-            // JSON'dan Patient nesnesine dönüştürme
-            Patient patient = objectMapper.readValue(messageBody, Patient.class);
-
-            // Mesaj başarıyla alındı ve dönüştürüldü
-            System.out.println("Yeni bir hasta kaydoldu: " + patient.getFirstName());
-            System.out.println("----- patient-----");
+            patient = objectMapper.readValue(messageBody, Patient.class);
             System.out.println(patient);
         } catch (Exception e) {
-            // Hata durumunda
-            System.err.println("Mesaj dönüştürme hatası: " + e.getMessage());
+            System.err.println("Message conversion error " + e.getMessage());
         }
+        if (patient != null){
+            // check new patient's age and gender criteria if there is a notification fit it
+            // bind them
+            Date birthDate = patient.getDateOfBirth();
+            LocalDate birthLocalDate = birthDate.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+            LocalDate today = LocalDate.now();
+            int age = Period.between(birthLocalDate, today).getYears();
 
+            System.out.println("age = " + age);
+            List<Notification> notifications = findAll();
+            for(Notification n:notifications){
+                if (age >= n.getNotificationCriteria().getStartAge() && age <= n.getNotificationCriteria().getEndAge()
+                        && n.getNotificationCriteria().getGender() == patient.getGender()){
+                    TargetPatient targetPatient = new TargetPatient();
+                    targetPatient.setPatientId(patient.getId());
+                    targetPatient.setNotificationId(n.getId());
+                    if(patient.isEmailActive()) targetPatient.setPrimaryMail(patient.getEmailAddresses().get(0).getEmailAddress());
+                    if(patient.isSmsActive()) targetPatient.setPrimaryPhone(patient.getPhoneNumbers().get(0).getPhoneNumber());
 
+                    targetPatientRepository.save(targetPatient);
+                }
+            }
+        }
     }
 }
 

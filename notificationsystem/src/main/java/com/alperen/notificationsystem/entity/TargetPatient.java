@@ -13,6 +13,10 @@ public class TargetPatient {
     int patientId;
     @Column(name = "notification_id")
     int notificationId;
+    @Column(name = "primary_mail")
+    String primaryMail;
+    @Column(name = "primary_phone")
+    String primaryPhone;
 
     public int getId() {
         return id;
@@ -36,5 +40,21 @@ public class TargetPatient {
 
     public void setNotificationId(int notificationId) {
         this.notificationId = notificationId;
+    }
+
+    public String getPrimaryMail() {
+        return primaryMail;
+    }
+
+    public void setPrimaryMail(String primaryMail) {
+        this.primaryMail = primaryMail;
+    }
+
+    public String getPrimaryPhone() {
+        return primaryPhone;
+    }
+
+    public void setPrimaryPhone(String primaryPhone) {
+        this.primaryPhone = primaryPhone;
     }
 }

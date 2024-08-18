@@ -11,11 +11,11 @@ public class Notification {
     @Column(name = "notification_id")
     private int id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "message_id", nullable = false)
     private NotificationMessage notificationMessage;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "criteria_id", nullable = false)
     private NotificationCriteria notificationCriteria;
 
