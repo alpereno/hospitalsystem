@@ -23,23 +23,27 @@ import java.util.List;
 public class PatientServiceImpl implements IPatientService {
 
     private IPatientRepository patientRepository;
-    //private ISendNotification notificationService;
 
     private final DirectExchange exchange;
     private final AmqpTemplate rabbitTemplate;
 
+    private final DirectExchange secondExchange; // İkinci Exchange için
+
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
+    @Value("${rabbitmq.second.routing.key}")
+    private String secondRoutingKey; // İkinci Routing Key için
 
     @Value("${rabbitmq.queue.name}")
     private String queueName;
 
     @Autowired
-    public PatientServiceImpl(IPatientRepository patientRepository, DirectExchange exchange, AmqpTemplate rabbitTemplate/*, ISendNotification notificationService*/){
+    public PatientServiceImpl(IPatientRepository patientRepository, DirectExchange exchange, DirectExchange secondExchange,
+                              AmqpTemplate rabbitTemplate){
         this.patientRepository = patientRepository;
         this.exchange = exchange;
+        this.secondExchange = secondExchange;
         this.rabbitTemplate = rabbitTemplate;
-        //this.notificationService = notificationService;
     }
 
     @Override
@@ -102,6 +106,8 @@ public class PatientServiceImpl implements IPatientService {
         List<Patient> patients = patientRepository.findByDateOfBirthBetweenAndGenderAndIsActiveTrue(startDate, endDate, gender);
         List<PatientResponse> patientResponseList = new ArrayList<>();
         fillResponseList(patients, patientResponseList);
+
+        rabbitTemplate.convertAndSend(secondExchange.getName(), secondRoutingKey, patientResponseList);
         return patientResponseList;
     }
 

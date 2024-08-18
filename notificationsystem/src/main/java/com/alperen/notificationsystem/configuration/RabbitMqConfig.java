@@ -8,9 +8,15 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfig {
     public static final String QUEUE_NAME = "patient_queue";
+    public static final String SECOND_QUEUE_NAME = "second_patient_queue";
 
     @Bean
     public Queue queue() {
         return new Queue(QUEUE_NAME, true);
+    }
+
+    @Bean
+    public Queue secondQueue() {
+        return new Queue(SECOND_QUEUE_NAME, true);
     }
 }
