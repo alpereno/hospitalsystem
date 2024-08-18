@@ -16,10 +16,28 @@ public class Patient {
     private String address;
     private String tckn;
     private String passportNumber;
-    private List<PhoneNumber> phoneNumbers = new ArrayList<>();
-    private List<EmailAddress> emailAddresses = new ArrayList<>();
     private boolean isSmsActive;
     private boolean isEmailActive;
+    private List<PhoneNumber> phoneNumbers = new ArrayList<>();
+    private List<EmailAddress> emailAddresses = new ArrayList<>();
+
+    public Patient() {
+    }
+
+    public Patient(List<EmailAddress> emailAddresses, List<PhoneNumber> phoneNumbers, boolean isEmailActive, boolean isSmsActive, String passportNumber, String tckn, String address, char gender, Date dateOfBirth, String lastName, String middleName, String firstName) {
+        this.emailAddresses = emailAddresses;
+        this.phoneNumbers = phoneNumbers;
+        this.isEmailActive = isEmailActive;
+        this.isSmsActive = isSmsActive;
+        this.passportNumber = passportNumber;
+        this.tckn = tckn;
+        this.address = address;
+        this.gender = gender;
+        this.dateOfBirth = dateOfBirth;
+        this.lastName = lastName;
+        this.middleName = middleName;
+        this.firstName = firstName;
+    }
 
     public int getId() {
         return id;
@@ -107,5 +125,24 @@ public class Patient {
 
     public void setEmailAddresses(List<EmailAddress> emailAddresses) {
         this.emailAddresses = emailAddresses;
+    }
+
+    @Override
+    public String toString() {
+        return "Patient{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", middleName='" + middleName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", dateOfBirth=" + dateOfBirth +
+                ", gender=" + gender +
+                ", address='" + address + '\'' +
+                ", tckn='" + tckn + '\'' +
+                ", passportNumber='" + passportNumber + '\'' +
+                ", isSmsActive=" + isSmsActive +
+                ", isEmailActive=" + isEmailActive +
+                ", phoneNumbers=" + phoneNumbers +
+                ", emailAddresses=" + emailAddresses +
+                '}';
     }
 }

@@ -5,8 +5,10 @@ import com.alperen.hospitalsystem.Response.PatientResponse;
 import com.alperen.hospitalsystem.entity.Patient;
 import com.alperen.hospitalsystem.repository.abstracts.IPatientRepository;
 import com.alperen.hospitalsystem.service.abstracts.IPatientService;
-//import com.alperen.hospitalsystem.service.abstracts.ISendNotification;
+import org.springframework.amqp.core.AmqpTemplate;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -23,9 +25,20 @@ public class PatientServiceImpl implements IPatientService {
     private IPatientRepository patientRepository;
     //private ISendNotification notificationService;
 
+    private final DirectExchange exchange;
+    private final AmqpTemplate rabbitTemplate;
+
+    @Value("${rabbitmq.routing.key}")
+    private String routingKey;
+
+    @Value("${rabbitmq.queue.name}")
+    private String queueName;
+
     @Autowired
-    public PatientServiceImpl(IPatientRepository patientRepository/*, ISendNotification notificationService*/){
+    public PatientServiceImpl(IPatientRepository patientRepository, DirectExchange exchange, AmqpTemplate rabbitTemplate/*, ISendNotification notificationService*/){
         this.patientRepository = patientRepository;
+        this.exchange = exchange;
+        this.rabbitTemplate = rabbitTemplate;
         //this.notificationService = notificationService;
     }
 
@@ -94,6 +107,8 @@ public class PatientServiceImpl implements IPatientService {
 
         PatientResponse response = new PatientResponse();
         fillPatientResponse(newPatient, response);
+
+        rabbitTemplate.convertAndSend(exchange.getName(), routingKey, response);
         return response;
     }
 
