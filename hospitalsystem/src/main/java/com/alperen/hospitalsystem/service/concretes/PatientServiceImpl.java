@@ -3,6 +3,7 @@ package com.alperen.hospitalsystem.service.concretes;
 import com.alperen.hospitalsystem.Request.PatientRequest;
 import com.alperen.hospitalsystem.Response.PatientResponse;
 import com.alperen.hospitalsystem.entity.Patient;
+import com.alperen.hospitalsystem.exception.IncorrectSavePatientException;
 import com.alperen.hospitalsystem.repository.abstracts.IPatientRepository;
 import com.alperen.hospitalsystem.service.abstracts.IPatientService;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -23,26 +24,19 @@ import java.util.List;
 public class PatientServiceImpl implements IPatientService {
 
     private IPatientRepository patientRepository;
-
+    @Value("${rabbitmq.exchange.name}")
     private final DirectExchange exchange;
     private final AmqpTemplate rabbitTemplate;
 
-    private final DirectExchange secondExchange; // İkinci Exchange için
-
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
-    @Value("${rabbitmq.second.routing.key}")
-    private String secondRoutingKey; // İkinci Routing Key için
-
     @Value("${rabbitmq.queue.name}")
     private String queueName;
 
     @Autowired
-    public PatientServiceImpl(IPatientRepository patientRepository, DirectExchange exchange, DirectExchange secondExchange,
-                              AmqpTemplate rabbitTemplate){
+    public PatientServiceImpl(IPatientRepository patientRepository, DirectExchange exchange, AmqpTemplate rabbitTemplate){
         this.patientRepository = patientRepository;
         this.exchange = exchange;
-        this.secondExchange = secondExchange;
         this.rabbitTemplate = rabbitTemplate;
     }
 
@@ -107,19 +101,19 @@ public class PatientServiceImpl implements IPatientService {
         List<PatientResponse> patientResponseList = new ArrayList<>();
         fillResponseList(patients, patientResponseList);
 
-        rabbitTemplate.convertAndSend(secondExchange.getName(), secondRoutingKey, patientResponseList);
+        //rabbitTemplate.convertAndSend(secondExchange.getName(), secondRoutingKey, patientResponseList);
         return patientResponseList;
     }
 
     @Override
-    public PatientResponse save(PatientRequest patientRequest){
+    public PatientResponse save(PatientRequest patientRequest) throws IncorrectSavePatientException {
         Patient newPatient = new Patient();
+        if (patientRequest.getTckn() == null){
+            throw new IncorrectSavePatientException("TCKN is not appropriate");
+        }
         fillPatientFields(newPatient, patientRequest, true);
 
         newPatient = patientRepository.save(newPatient);
-
-        // yas hesapla
-        //notificationService.savePatientNotification(newPatient.getId(), newPatient.getGender(), 5);
 
         PatientResponse response = new PatientResponse();
         fillPatientResponse(newPatient, response);
