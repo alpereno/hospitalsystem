@@ -13,6 +13,7 @@ public interface IPatientService {
     public List<PatientResponse> findByLastName(String lastName);
     public List<PatientResponse> findByGender(char gender);
     public List<PatientResponse> findByDateOfBirthBetween(int startAge, int endAge);
+    public List<PatientResponse> findByAgeRangeAndGender(int startAge, int endAge, char gender);
     //public Patient save(PatientRequest patient);
     public PatientResponse save(PatientRequest patient);
     public PatientResponse update(int id, PatientRequest updatedPatient);

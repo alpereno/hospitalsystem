@@ -96,6 +96,16 @@ public class PatientServiceImpl implements IPatientService {
     }
 
     @Override
+    public List<PatientResponse> findByAgeRangeAndGender(int startAge, int endAge, char gender) {
+        Timestamp startDate = Timestamp.valueOf(LocalDate.now().minusYears(endAge + 1).plusDays(1).atStartOfDay());
+        Timestamp endDate = Timestamp.valueOf(LocalDate.now().minusYears(startAge).plusDays(1).atStartOfDay());
+        List<Patient> patients = patientRepository.findByDateOfBirthBetweenAndGenderAndIsActiveTrue(startDate, endDate, gender);
+        List<PatientResponse> patientResponseList = new ArrayList<>();
+        fillResponseList(patients, patientResponseList);
+        return patientResponseList;
+    }
+
+    @Override
     public PatientResponse save(PatientRequest patientRequest){
         Patient newPatient = new Patient();
         fillPatientFields(newPatient, patientRequest, true);

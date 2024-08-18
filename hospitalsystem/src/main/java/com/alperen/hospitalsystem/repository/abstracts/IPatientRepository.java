@@ -14,6 +14,6 @@ public interface IPatientRepository extends JpaRepository<Patient, Integer> {
     public List<Patient> findByFirstNameContainingIgnoreCaseAndIsActiveTrue(String firstName);
     public List<Patient> findByLastNameContainingIgnoreCaseAndIsActiveTrue(String lastName);
     public List<Patient> findByGenderAndIsActiveTrue(char gender);
-    List<Patient> findByDateOfBirthBetweenAndIsActiveTrue(Timestamp startDate, Timestamp endDate);
-
+    public List<Patient> findByDateOfBirthBetweenAndIsActiveTrue(Timestamp startDate, Timestamp endDate);
+    public List<Patient> findByDateOfBirthBetweenAndGenderAndIsActiveTrue(Timestamp startDate, Timestamp endDate, char gender);
 }
