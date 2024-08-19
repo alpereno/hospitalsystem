@@ -2,6 +2,7 @@ package com.alperen.notificationsystem.service;
 
 import com.alperen.notificationsystem.configuration.RabbitMqConfig;
 import com.alperen.notificationsystem.entity.Notification;
+import com.alperen.notificationsystem.entity.NotificationCriteria;
 import com.alperen.notificationsystem.entity.TargetPatient;
 import com.alperen.notificationsystem.entity.patientEntity.Patient;
 import com.alperen.notificationsystem.repository.INotificationRepository;
@@ -66,9 +67,12 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     public Notification save(Notification notification) {
-        Notification newNotification = notificationRepository.save(notification);
-        rabbitTemplate.convertAndSend(secondExchange.getName(), secondRoutingKey, newNotification);
-        return newNotification;
+        if (notification.getNotificationCriteria() != null & notification.getNotificationMessage() != null){
+            Notification newNotification = notificationRepository.save(notification);
+            rabbitTemplate.convertAndSend(secondExchange.getName(), secondRoutingKey, newNotification);
+            return newNotification;
+        }
+        throw new IllegalArgumentException("notification criteria and message cannot be null");
     }
 
     @Override
