@@ -1,6 +1,7 @@
 package com.alperen.notificationsystem.controller;
 
 import com.alperen.notificationsystem.entity.Notification;
+import com.alperen.notificationsystem.entity.TargetPatient;
 import com.alperen.notificationsystem.entity.patientEntity.Patient;
 import com.alperen.notificationsystem.service.INotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/notification")
+@CrossOrigin(origins = "http://localhost:3000")
 public class NotificationController {
 
     private INotificationService notificationService;
@@ -41,7 +43,8 @@ public class NotificationController {
         notificationService.deleteById(id);
     }
 
-    public void setNotifications(List<Patient> patients){
-
+    @GetMapping("/getAllTargetPatient")
+    public ResponseEntity<List<TargetPatient>> setNotifications(){
+        return new ResponseEntity<>(notificationService.findAllTargetPatient(), HttpStatus.OK);
     }
 }

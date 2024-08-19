@@ -7,7 +7,6 @@ import com.alperen.notificationsystem.entity.patientEntity.Patient;
 import com.alperen.notificationsystem.repository.INotificationRepository;
 import com.alperen.notificationsystem.repository.ITargetPatientRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.DirectExchange;
@@ -20,11 +19,10 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -75,6 +73,7 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     public void deleteById(int id) {
+        targetPatientRepository.deleteByNotificationId(id);
         notificationRepository.deleteById(id);
     }
 
@@ -89,6 +88,11 @@ public class NotificationServiceImpl implements INotificationService {
         return notificationRepository.save(notification);
     }
 
+    @Override
+    public List<TargetPatient> findAllTargetPatient() {
+        return targetPatientRepository.findAll();
+    }
+
     @RabbitListener(queues = RabbitMqConfig.SECOND_QUEUE_NAME)
     public void setNotificationToPatientList(Message message) throws JsonProcessingException {
 
@@ -101,28 +105,26 @@ public class NotificationServiceImpl implements INotificationService {
         List<Patient> patients = restTemplate.exchange(url, HttpMethod.GET,null, new ParameterizedTypeReference<List<Patient>>() {}).getBody();
         System.out.println("list len" + patients.size());
         for(Patient p : patients){
+            boolean willSave = false;
             TargetPatient targetPatient = new TargetPatient();
-            targetPatient.setPatientId(p.getId());
-            targetPatient.setNotificationId(notification.getId());
-            if(p.getEmailAddresses() != null && p.getPhoneNumbers() != null && !p.getPhoneNumbers().isEmpty() && !p.getEmailAddresses().isEmpty()){
+            if (p.isEmailActive() && p.getEmailAddresses() != null && !p.getEmailAddresses().isEmpty()){
+                willSave = true;
                 targetPatient.setPrimaryMail(p.getEmailAddresses().get(0).getEmailAddress());
+            }
+            if (p.isSmsActive() && p.getPhoneNumbers() != null && !p.getPhoneNumbers().isEmpty()){
+                willSave = true;
                 targetPatient.setPrimaryPhone(p.getPhoneNumbers().get(0).getPhoneNumber());
             }
-            targetPatientRepository.save(targetPatient);
+            if (willSave){
+                targetPatient.setNotificationId(notification.getId());
+                targetPatient.setPatientId(p.getId());
+                targetPatientRepository.save(targetPatient);
+            }
         }
     }
 
     @RabbitListener(queues = RabbitMqConfig.QUEUE_NAME)
     public void setNotificationToPatient(Patient patient){
-        //Patient patient = null;
-       // System.out.println(message.getClass());
-//        try {
-//            String messageBody = new String(message.getBody());
-//            patient = objectMapper.readValue(messageBody, Patient.class);
-//            System.out.println(patient);
-//        } catch (Exception e) {
-//            System.err.println("Message conversion error " + e.getMessage());
-//        }
         if (patient != null){
             // check new patient's age and gender criteria if there is a notification fit it
             // bind them
@@ -133,18 +135,26 @@ public class NotificationServiceImpl implements INotificationService {
             LocalDate today = LocalDate.now();
             int age = Period.between(birthLocalDate, today).getYears();
 
-            System.out.println("age = " + age);
+
             List<Notification> notifications = findAll();
             for(Notification n:notifications){
                 if (age >= n.getNotificationCriteria().getStartAge() && age <= n.getNotificationCriteria().getEndAge()
                         && n.getNotificationCriteria().getGender() == patient.getGender()){
+                    boolean willSave = false;
                     TargetPatient targetPatient = new TargetPatient();
-                    targetPatient.setPatientId(patient.getId());
-                    targetPatient.setNotificationId(n.getId());
-                    if(patient.isEmailActive()) targetPatient.setPrimaryMail(patient.getEmailAddresses().get(0).getEmailAddress());
-                    if(patient.isSmsActive()) targetPatient.setPrimaryPhone(patient.getPhoneNumbers().get(0).getPhoneNumber());
-
-                    targetPatientRepository.save(targetPatient);
+                    if (patient.isEmailActive() && patient.getEmailAddresses() != null & !patient.getEmailAddresses().isEmpty()){
+                        willSave = true;
+                        targetPatient.setPrimaryMail(patient.getEmailAddresses().get(0).getEmailAddress());
+                    }
+                    if (patient.isSmsActive() && patient.getPhoneNumbers() != null && !patient.getPhoneNumbers().isEmpty()){
+                        willSave = true;
+                        targetPatient.setPrimaryPhone(patient.getPhoneNumbers().get(0).getPhoneNumber());
+                    }
+                    if(willSave){
+                        targetPatient.setPatientId(patient.getId());
+                        targetPatient.setNotificationId(n.getId());
+                        targetPatientRepository.save(targetPatient);
+                    }
                 }
             }
         }
