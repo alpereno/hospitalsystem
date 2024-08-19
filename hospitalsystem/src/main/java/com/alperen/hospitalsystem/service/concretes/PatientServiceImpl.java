@@ -3,6 +3,7 @@ package com.alperen.hospitalsystem.service.concretes;
 import com.alperen.hospitalsystem.Request.PatientRequest;
 import com.alperen.hospitalsystem.Response.PatientResponse;
 import com.alperen.hospitalsystem.entity.Patient;
+import com.alperen.hospitalsystem.exception.InappropriateRequestException;
 import com.alperen.hospitalsystem.exception.IncorrectSavePatientException;
 import com.alperen.hospitalsystem.repository.abstracts.IPatientRepository;
 import com.alperen.hospitalsystem.service.abstracts.IPatientService;
@@ -49,8 +50,8 @@ public class PatientServiceImpl implements IPatientService {
     }
 
     @Override
-    public PatientResponse findById(int id) {
-        Patient patient = patientRepository.findById(id).orElseThrow(() -> new RuntimeException("Patient not found with id: " + id));
+    public PatientResponse findById(int id) throws InappropriateRequestException {
+        Patient patient = patientRepository.findById(id).orElseThrow(() -> new InappropriateRequestException("Patient not found with id: " + id));
         PatientResponse response = new PatientResponse();
         fillPatientResponse(patient, response);
         return response;
@@ -108,9 +109,10 @@ public class PatientServiceImpl implements IPatientService {
     @Override
     public PatientResponse save(PatientRequest patientRequest) throws IncorrectSavePatientException {
         Patient newPatient = new Patient();
-        if (patientRequest.getTckn() == null){
-            throw new IncorrectSavePatientException("TCKN is not appropriate");
-        }
+        if (patientRequest.getTckn() == null) throw new IncorrectSavePatientException("TCKN is not appropriate");
+        if(patientRepository.findByFirstNameContainingIgnoreCaseAndIsActiveTrue(patientRequest.getFirstName()) != null)
+            throw new IncorrectSavePatientException("This record already exist");
+
         fillPatientFields(newPatient, patientRequest, true);
 
         newPatient = patientRepository.save(newPatient);
@@ -123,12 +125,12 @@ public class PatientServiceImpl implements IPatientService {
     }
 
     @Override
-    public PatientResponse update(int id, PatientRequest patientRequest) {
+    public PatientResponse update(int id, PatientRequest patientRequest) throws InappropriateRequestException{
         // check if patient active
-
         // Find the existing patient by ID
+
         Patient existingPatient = patientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
+                .orElseThrow(() -> new InappropriateRequestException("Patient not found"));
 
         // Deactivate the existing patient record
         existingPatient.setActive(false);
@@ -152,9 +154,9 @@ public class PatientServiceImpl implements IPatientService {
     }
 
     @Override
-    public boolean deleteById(int id) {
+    public boolean deleteById(int id) throws InappropriateRequestException {
         // instead of deleting change the patient's activity status
-        Patient patient =  patientRepository.findById(id).orElseThrow(() -> new RuntimeException("Patient not found with id: " + id));
+        Patient patient =  patientRepository.findById(id).orElseThrow(() -> new InappropriateRequestException("Patient not found with id: " + id));
 
         patient.arrangeUpdateTime();
         patient.setActive(false);

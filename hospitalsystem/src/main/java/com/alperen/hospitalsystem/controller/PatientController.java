@@ -39,7 +39,6 @@ public class PatientController {
         return new ResponseEntity<>(patientService.findByGender(gender), HttpStatus.OK);
     }
 
-
     @GetMapping("/searchName/{name}")
     public ResponseEntity<List<PatientResponse>> searchByName(@PathVariable("name") String name){
         return new ResponseEntity<>(patientService.findByName(name), HttpStatus.OK);

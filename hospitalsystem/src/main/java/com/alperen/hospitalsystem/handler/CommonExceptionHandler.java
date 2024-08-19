@@ -1,5 +1,6 @@
 package com.alperen.hospitalsystem.handler;
 
+import com.alperen.hospitalsystem.exception.InappropriateRequestException;
 import com.alperen.hospitalsystem.exception.IncorrectSavePatientException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,9 @@ public class CommonExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
-
-
+    @ExceptionHandler({InappropriateRequestException.class})
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+    public ResponseEntity<Object> handleInappropriateRequestException(InappropriateRequestException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ex.getMessage());
+    }
 }
