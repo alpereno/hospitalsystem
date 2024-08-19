@@ -5,6 +5,7 @@ import com.alperen.notificationsystem.entity.Notification;
 import com.alperen.notificationsystem.entity.NotificationCriteria;
 import com.alperen.notificationsystem.entity.TargetPatient;
 import com.alperen.notificationsystem.entity.patientEntity.Patient;
+import com.alperen.notificationsystem.exception.InappropriateRequestException;
 import com.alperen.notificationsystem.repository.INotificationRepository;
 import com.alperen.notificationsystem.repository.ITargetPatientRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -66,13 +67,15 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
-    public Notification save(Notification notification) {
+    public Notification save(Notification notification) throws InappropriateRequestException {
         if (notification.getNotificationCriteria() != null & notification.getNotificationMessage() != null){
+            if (notification.getNotificationCriteria().getStartAge() == notification.getNotificationCriteria().getEndAge())
+                throw new InappropriateRequestException("Age range cannot consist of the same numbers");
             Notification newNotification = notificationRepository.save(notification);
             rabbitTemplate.convertAndSend(secondExchange.getName(), secondRoutingKey, newNotification);
             return newNotification;
         }
-        throw new IllegalArgumentException("notification criteria and message cannot be null");
+        throw new InappropriateRequestException("Notification criteria and message cannot be null");
     }
 
     @Override
@@ -82,9 +85,9 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
-    public Notification update(int id, Notification updatedNotification) {
+    public Notification update(int id, Notification updatedNotification) throws InappropriateRequestException{
         Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Notification not found with id: " + id));
+                .orElseThrow(() -> new InappropriateRequestException("Notification not found with id: " + id));
 
         notification.setNotificationCriteria(updatedNotification.getNotificationCriteria());
         notification.setNotificationMessage(updatedNotification.getNotificationMessage());
@@ -99,30 +102,31 @@ public class NotificationServiceImpl implements INotificationService {
 
     @RabbitListener(queues = RabbitMqConfig.SECOND_QUEUE_NAME)
     public void setNotificationToPatientList(Message message) throws JsonProcessingException {
+        if (message != null){
+            String messageBody = new String(message.getBody());
+            Notification notification = objectMapper.readValue(messageBody, Notification.class );
 
-        String messageBody = new String(message.getBody());
-        Notification notification = objectMapper.readValue(messageBody, Notification.class );
+            String url = String.format("%s/%d/%d/%c", patientApiUrl, notification.getNotificationCriteria().getStartAge(),
+                    notification.getNotificationCriteria().getEndAge(), notification.getNotificationCriteria().getGender());
 
-        String url = String.format("%s/%d/%d/%c", patientApiUrl, notification.getNotificationCriteria().getStartAge(),
-                notification.getNotificationCriteria().getEndAge(), notification.getNotificationCriteria().getGender());
-
-        List<Patient> patients = restTemplate.exchange(url, HttpMethod.GET,null, new ParameterizedTypeReference<List<Patient>>() {}).getBody();
-        System.out.println("list len" + patients.size());
-        for(Patient p : patients){
-            boolean willSave = false;
-            TargetPatient targetPatient = new TargetPatient();
-            if (p.isEmailActive() && p.getEmailAddresses() != null && !p.getEmailAddresses().isEmpty()){
-                willSave = true;
-                targetPatient.setPrimaryMail(p.getEmailAddresses().get(0).getEmailAddress());
-            }
-            if (p.isSmsActive() && p.getPhoneNumbers() != null && !p.getPhoneNumbers().isEmpty()){
-                willSave = true;
-                targetPatient.setPrimaryPhone(p.getPhoneNumbers().get(0).getPhoneNumber());
-            }
-            if (willSave){
-                targetPatient.setNotificationId(notification.getId());
-                targetPatient.setPatientId(p.getId());
-                targetPatientRepository.save(targetPatient);
+            List<Patient> patients = restTemplate.exchange(url, HttpMethod.GET,null, new ParameterizedTypeReference<List<Patient>>() {}).getBody();
+            System.out.println("list len" + patients.size());
+            for(Patient p : patients){
+                boolean willSave = false;
+                TargetPatient targetPatient = new TargetPatient();
+                if (p.isEmailActive() && p.getEmailAddresses() != null && !p.getEmailAddresses().isEmpty()){
+                    willSave = true;
+                    targetPatient.setPrimaryMail(p.getEmailAddresses().get(0).getEmailAddress());
+                }
+                if (p.isSmsActive() && p.getPhoneNumbers() != null && !p.getPhoneNumbers().isEmpty()){
+                    willSave = true;
+                    targetPatient.setPrimaryPhone(p.getPhoneNumbers().get(0).getPhoneNumber());
+                }
+                if (willSave){
+                    targetPatient.setNotificationId(notification.getId());
+                    targetPatient.setPatientId(p.getId());
+                    targetPatientRepository.save(targetPatient);
+                }
             }
         }
     }

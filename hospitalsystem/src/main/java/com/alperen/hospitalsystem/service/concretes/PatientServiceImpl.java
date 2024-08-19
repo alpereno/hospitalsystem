@@ -110,7 +110,7 @@ public class PatientServiceImpl implements IPatientService {
     public PatientResponse save(PatientRequest patientRequest) throws IncorrectSavePatientException {
         Patient newPatient = new Patient();
         if (patientRequest.getTckn() == null) throw new IncorrectSavePatientException("TCKN is not appropriate");
-        if(patientRepository.findByFirstNameContainingIgnoreCaseAndIsActiveTrue(patientRequest.getFirstName()) != null)
+        if(!patientRepository.findByFirstNameContainingIgnoreCaseAndIsActiveTrue(patientRequest.getFirstName()).isEmpty())
             throw new IncorrectSavePatientException("This record already exist");
 
         fillPatientFields(newPatient, patientRequest, true);
