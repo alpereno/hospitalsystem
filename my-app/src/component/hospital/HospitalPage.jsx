@@ -13,8 +13,8 @@ const HospitalPage = () => {
     address: '',
     tckn: '',
     passportNumber: '',
-    isSmsActive: false,
-    isEmailActive: false,
+    isSmsActive: '',
+    isEmailActive: '',
     phoneNumbers: [],
     emailAddresses: []
   });
@@ -105,8 +105,8 @@ const HospitalPage = () => {
         address: '',
         tckn: '',
         passportNumber: '',
-        isSmsActive: false,
-        isEmailActive: false,
+        isSmsActive: '',
+        isEmailActive: '',
         phoneNumbers: [],
         emailAddresses: []
       });
@@ -157,8 +157,8 @@ const HospitalPage = () => {
         address: '',
         tckn: '',
         passportNumber: '',
-        isSmsActive: false,
-        isEmailActive: false,
+        isSmsActive: '',
+        isEmailActive: '',
         phoneNumbers: [],
         emailAddresses: []
       });
@@ -375,8 +375,8 @@ const HospitalPage = () => {
           <label style={{ marginRight: '20px' }}>
             <input
               type="checkbox"
-              name="isSmsActive"
-              checked={newPatient.isSmsActive}
+              name="smsActive"
+              checked={newPatient.smsActive}
               onChange={handleCheckboxChange}
               style={{ marginRight: '10px' }}
             />
@@ -385,8 +385,8 @@ const HospitalPage = () => {
           <label>
             <input
               type="checkbox"
-              name="isEmailActive"
-              checked={newPatient.isEmailActive}
+              name="emailActive"
+              checked={newPatient.emailActive}
               onChange={handleCheckboxChange}
               style={{ marginRight: '10px' }}
             />
@@ -416,82 +416,93 @@ const HospitalPage = () => {
       <div>
         <h2>Patients List</h2>
         <table style={{
-          width: '100%',
-          borderCollapse: 'collapse',
-          textAlign: 'center',
-          marginBottom: '20px',
-          boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.1)',
-          borderRadius: '10px',
-          overflow: 'hidden'
-        }}>
-          <thead>
-            <tr style={{ backgroundColor: '#007bff', color: 'white' }}>
-              <th style={{ padding: '15px', borderRight: '1px solid white' }}>First Name</th>
-              <th style={{ padding: '15px', borderRight: '1px solid white' }}>Middle Name</th>
-              <th style={{ padding: '15px', borderRight: '1px solid white' }}>Last Name</th>
-              <th style={{ padding: '15px', borderRight: '1px solid white' }}>Date of Birth</th>
-              <th style={{ padding: '15px', borderRight: '1px solid white' }}>Gender</th>
-              <th style={{ padding: '15px', borderRight: '1px solid white' }}>Address</th>
-              <th style={{ padding: '15px', borderRight: '1px solid white' }}>TCKN</th>
-              <th style={{ padding: '15px', borderRight: '1px solid white' }}>Passport Number</th>
-              <th style={{ padding: '15px', borderRight: '1px solid white' }}>Phone Numbers</th>
-              <th style={{ padding: '15px', borderRight: '1px solid white' }}>Email Addresses</th>
-              <th style={{ padding: '15px' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {patients.map(patient => (
-              <tr key={patient.id} style={{
-                backgroundColor: '#f9f9f9',
-                transition: 'background-color 0.3s ease',
-                borderBottom: '1px solid #ddd'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f1f1'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f9f9f9'}>
-                <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.firstName}</td>
-                <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.middleName}</td>
-                <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.lastName}</td>
-                <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.dateOfBirth}</td>
-                <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.gender}</td>
-                <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.address}</td>
-                <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.tckn}</td>
-                <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.passportNumber}</td>
-                <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>
-                  {patient.phoneNumbers.map((phone, index) => (
-                    <div key={index}>{phone.phoneNumber} ({phone.phoneType})</div>
-                  ))}
-                </td>
-                <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>
-                  {patient.emailAddresses.map((email, index) => (
-                    <div key={index}>{email.emailAddress} ({email.emailType})</div>
-                  ))}
-                </td>
-                <td style={{ padding: '15px' }}>
-                  <button onClick={() => handleDelete(patient.id)} style={{
-                    padding: '8px 15px',
-                    borderRadius: '5px',
-                    backgroundColor: '#dc3545',
-                    color: 'white',
-                    border: 'none'
-                  }}>
-                    Delete
-                  </button>
-                </td>
-                <td style={{ padding: '15px' }}>
-                  <button onClick={() => handleUpdatePatient(patient.id)} style={{
-                    padding: '8px 15px',
-                    borderRadius: '5px',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    border: 'none'
-                  }}>
-                    Update
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+  width: '100%',
+  borderCollapse: 'collapse',
+  textAlign: 'center',
+  marginBottom: '20px',
+  boxShadow: '0px 0px 15px rgba(0, 0, 0, 0.1)',
+  borderRadius: '10px',
+  overflow: 'hidden'
+}}>
+  <thead>
+    <tr style={{ backgroundColor: '#007bff', color: 'white' }}>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>ID</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>First Name</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>Middle Name</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>Last Name</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>Date of Birth</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>Gender</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>Address</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>TCKN</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>Passport Number</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>Phone Numbers</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>Email Addresses</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>SMS Active</th>
+      <th style={{ padding: '15px', borderRight: '1px solid white' }}>Email Active</th>
+      <th style={{ padding: '15px' }}>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {patients.map(patient => (
+      <tr key={patient.id} style={{
+        backgroundColor: '#f9f9f9',
+        transition: 'background-color 0.3s ease',
+        borderBottom: '1px solid #ddd'
+      }}
+      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f1f1'}
+      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#f9f9f9'}>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.id}</td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.firstName}</td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.middleName}</td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.lastName}</td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.dateOfBirth}</td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.gender}</td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.address}</td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.tckn}</td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>{patient.passportNumber}</td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>
+          {patient.phoneNumbers.map((phone, index) => (
+            <div key={index}>{phone.phoneNumber} ({phone.phoneType})</div>
+          ))}
+        </td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>
+          {patient.emailAddresses.map((email, index) => (
+            <div key={index}>{email.emailAddress} ({email.emailType})</div>
+          ))}
+        </td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>
+          {patient.smsActive ? 'Yes' : 'No'}
+        </td>
+        <td style={{ padding: '15px', borderRight: '1px solid #ddd' }}>
+          {patient.emailActive ? 'Yes' : 'No'}
+        </td>
+        <td style={{ padding: '15px' }}>
+          <button onClick={() => handleDelete(patient.id)} style={{
+            padding: '8px 15px',
+            borderRadius: '5px',
+            backgroundColor: '#dc3545',
+            color: 'white',
+            border: 'none'
+          }}>
+            Delete
+          </button>
+        </td>
+        <td style={{ padding: '15px' }}>
+          <button onClick={() => handleUpdatePatient(patient.id)} style={{
+            padding: '8px 15px',
+            borderRadius: '5px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none'
+          }}>
+            Update
+          </button>
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
       </div>
     </div>
   );
