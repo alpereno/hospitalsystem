@@ -27,8 +27,8 @@ SET default_table_access_method = heap;
 CREATE TABLE public.email_addresses (
     email_id integer NOT NULL,
     patient_id integer,
-    email_address character varying(100) NOT NULL,
-    email_type character varying(20)
+    email_address character varying(255) NOT NULL,
+    email_type character varying(255)
 );
 
 
@@ -62,18 +62,20 @@ ALTER SEQUENCE public.email_addresses_email_id_seq OWNED BY public.email_address
 
 CREATE TABLE public.patients (
     patient_id integer NOT NULL,
-    first_name character varying(50) NOT NULL,
-    middle_name character varying(50),
-    last_name character varying(50) NOT NULL,
-    date_of_birth date,
+    first_name character varying(255) NOT NULL,
+    middle_name character varying(255),
+    last_name character varying(255) NOT NULL,
+    date_of_birth timestamp(6) without time zone,
     gender character(1),
-    address text,
-    tckn character(11),
+    address character varying(255),
+    tckn character varying(11),
     passport_number character varying(20),
     version_number integer DEFAULT 1,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     is_active boolean DEFAULT true,
+    email_notification boolean,
+    sms_notification boolean,
     CONSTRAINT patients_gender_check CHECK ((gender = ANY (ARRAY['M'::bpchar, 'F'::bpchar])))
 );
 
@@ -109,9 +111,9 @@ ALTER SEQUENCE public.patients_patient_id_seq OWNED BY public.patients.patient_i
 CREATE TABLE public.phone_numbers (
     phone_id integer NOT NULL,
     patient_id integer,
-    phone_number character varying(20) NOT NULL,
-    phone_type character varying(20),
-    CONSTRAINT phone_numbers_phone_type_check CHECK (((phone_type)::text = ANY ((ARRAY['mobile'::character varying, 'home'::character varying, 'work'::character varying])::text[])))
+    phone_number character varying(255) NOT NULL,
+    phone_type character varying(255),
+    CONSTRAINT phone_numbers_phone_type_check CHECK (((phone_type)::text = ANY (ARRAY[('mobile'::character varying)::text, ('home'::character varying)::text, ('work'::character varying)::text])))
 );
 
 
@@ -165,6 +167,17 @@ ALTER TABLE ONLY public.phone_numbers ALTER COLUMN phone_id SET DEFAULT nextval(
 --
 
 COPY public.email_addresses (email_id, patient_id, email_address, email_type) FROM stdin;
+103	118	patient@pat.com	Personal
+104	119	patient@hospital.com	Personal
+105	120	another@hospital.com	Personal
+106	121	another@hospital.com	Personal
+107	122	fem@hospital.com	Personal
+108	123	anotfem@hospital.com	Work
+109	124	anotfem@hospital.com	Work
+110	125	lisa@hospital.com	Personal
+111	126	John@hospital.com	Personal
+112	127	Sammy@hospital.com	Personal
+113	128	ArthurJ@patient.com	Personal
 \.
 
 
@@ -172,7 +185,18 @@ COPY public.email_addresses (email_id, patient_id, email_address, email_type) FR
 -- Data for Name: patients; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.patients (patient_id, first_name, middle_name, last_name, date_of_birth, gender, address, tckn, passport_number, version_number, created_at, updated_at, is_active) FROM stdin;
+COPY public.patients (patient_id, first_name, middle_name, last_name, date_of_birth, gender, address, tckn, passport_number, version_number, created_at, updated_at, is_active, email_notification, sms_notification) FROM stdin;
+120	xPatient		xxxpatien	1982-08-03 03:00:00	M	adress	11211168111	s32j84klj	1	2024-08-19 17:25:07.895207	2024-08-19 17:25:07.895207	t	t	t
+122	FemPatient	mid	Fpatient	1985-08-03 03:00:00	F	fem adress	11217268156	s62j84qlj	1	2024-08-19 17:26:56.405306	2024-08-19 17:26:56.405306	t	f	f
+123	AnotFemPatient	justmid	AnotFpatient	1994-08-03 03:00:00	F	fem street	11217268236	s62j1sqlj	1	2024-08-19 17:27:55.432163	2024-08-19 17:27:55.432163	t	t	t
+124	thirdFem	TFM	AnotFpatient	1998-08-03 03:00:00	F	fem street	1121726136	s62j1sqlj	1	2024-08-19 17:29:05.232757	2024-08-19 17:29:05.232757	t	t	f
+125	Lisa	TFM	Arnold	1998-08-03 03:00:00	F	fem street	1121726136	s62o1sqlj	1	2024-08-19 17:30:09.854625	2024-08-19 17:30:09.854625	t	t	t
+126	John	Dea	Burn	1999-08-03 03:00:00	M	just street	1121726894	x92o1sqlj	1	2024-08-19 17:31:32.742156	2024-08-19 17:31:32.742156	t	t	t
+121	yPatient	mid	ypatient	1980-08-03 03:00:00	M	city adress	11211168156	s32j84qlj	1	2024-08-19 17:26:00.202517	2024-08-19 17:26:00.202517	f	f	t
+127	Sam		Hilfiger	1980-08-03 03:00:00	M	just street	11211168156	s32j84qlj	2	\N	2024-08-19 17:38:24.30729	t	f	t
+118	APatient	AP	Patient	1996-08-03 03:00:00	M	adress	11111111111	s7fj82klj	1	2024-08-19 17:18:14.023961	2024-08-19 17:18:14.023961	f	t	t
+128	Arthur	Joan	Wickander	1996-08-03 03:00:00	M	just street	11111111111	s7fj82klj	2	\N	2024-08-19 17:39:47.267535	t	t	t
+119	NPatient		PatientN	1996-08-03 03:00:00	M	adress	11211111111	s7fj84klj	1	2024-08-19 17:22:51.197251	2024-08-19 17:41:57.991602	f	t	f
 \.
 
 
@@ -181,6 +205,17 @@ COPY public.patients (patient_id, first_name, middle_name, last_name, date_of_bi
 --
 
 COPY public.phone_numbers (phone_id, patient_id, phone_number, phone_type) FROM stdin;
+105	118	555-222-556	mobile
+106	119	356-278-526	mobile
+107	120	356-278-526	mobile
+108	121	356-278-526	mobile
+109	122	336-271-526	mobile
+110	123	336-271-526	mobile
+111	124	336-271-526	mobile
+112	125	336-274-126	mobile
+113	126	336-274-126	mobile
+114	127	336-274-126	mobile
+115	128	336-274-126	mobile
 \.
 
 
@@ -188,21 +223,21 @@ COPY public.phone_numbers (phone_id, patient_id, phone_number, phone_type) FROM 
 -- Name: email_addresses_email_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.email_addresses_email_id_seq', 1, false);
+SELECT pg_catalog.setval('public.email_addresses_email_id_seq', 113, true);
 
 
 --
 -- Name: patients_patient_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.patients_patient_id_seq', 1, false);
+SELECT pg_catalog.setval('public.patients_patient_id_seq', 128, true);
 
 
 --
 -- Name: phone_numbers_phone_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.phone_numbers_phone_id_seq', 1, false);
+SELECT pg_catalog.setval('public.phone_numbers_phone_id_seq', 115, true);
 
 
 --
@@ -214,27 +249,11 @@ ALTER TABLE ONLY public.email_addresses
 
 
 --
--- Name: patients patients_passport_number_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.patients
-    ADD CONSTRAINT patients_passport_number_key UNIQUE (passport_number);
-
-
---
 -- Name: patients patients_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY public.patients
     ADD CONSTRAINT patients_pkey PRIMARY KEY (patient_id);
-
-
---
--- Name: patients patients_tckn_key; Type: CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.patients
-    ADD CONSTRAINT patients_tckn_key UNIQUE (tckn);
 
 
 --
