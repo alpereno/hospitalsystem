@@ -25,6 +25,7 @@ public class NotificationCriteria implements Serializable {
     @Column(name = "gender")
     private char gender;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "notificationCriteria", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Notification notification;
 

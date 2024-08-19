@@ -22,6 +22,7 @@ public class NotificationMessage implements Serializable {
     @Column(name = "message")
     private String message;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "notificationMessage", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Notification notification;
 
