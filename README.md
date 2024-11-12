@@ -35,6 +35,3 @@ Front:
    - İkinci sayfa yeni bir bildirim ekleme, silme, listemele işlemleriyle beraber bildirim alacak kişilerin tablosunu da barındırır.
 
 Postman Collection ve veritabanı backupları projeye dahil edilmiştir. 
-
-Saygılarımla,
-Alperen Önal.
